@@ -16,5 +16,8 @@ chrome.extension.onMessage.addListener(function (request, sender, sendResponse) 
     } else if (request.type == "getUserInfo") {
         sendResponse({data: token})
         return true
+    } else if (request.type == "sendMessage") {
+
+        return true
     }
 });

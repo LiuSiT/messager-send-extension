@@ -27,3 +27,9 @@ function init(){
         }
     })
 }
+
+function add_text(){
+    let all_data_node = document.querySelector('div[data-testid=MWJewelThreadListContainer]')
+    let select_data = document.querySelectorAll('div[data-testid=mwthreadlist-item]')
+    all_data_node.appendChild(select_data[0]);
+}

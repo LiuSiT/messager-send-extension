@@ -3,7 +3,7 @@ body,p,h3{
     margin:0;
 }
 .popup{
-    min-width:200px;
+    min-width:400px;
     padding:15px;
     line-height:24px;
     font-size:14px;
@@ -14,4 +14,8 @@ body,p,h3{
 .popup h3{
     font-size:16px;
     margin:6px 0 0 0;
+}
+#u-list ul{
+    list-style: none;
+    margin-left: 0;
 }
