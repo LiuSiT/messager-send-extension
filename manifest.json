@@ -1,0 +1,54 @@
+{
+  "name":"message消息发送器",
+  "description":"princeLua",
+  "version":"1.0.0",
+  "manifest_version":2,
+  "browser_action":{
+    "default_icon":"icons/message.png",
+    "default_title":"message消息发送器",
+    "default_popup": "popup.html"
+  },
+  "icons":{
+    "16": "icons/message.png",
+    "19": "icons/message.png",
+    "38": "icons/message.png",
+    "48": "icons/message.png",
+    "128": "icons/message.png"
+  },
+  "permissions": [
+    "http://*/",
+    "https://*/",
+    "bookmarks",
+    "tabs",
+    "background",
+    "history",
+    "unlimitedStorage",
+    "storage",
+    "cookies",
+    {"fileSystem": ["write"]}
+  ],
+  "background": {
+    "page": "background.html"
+  },
+  "content_scripts": [
+    {
+      "all_frames": true,
+      "js": [
+        "content/main.js",
+        "content/index.js"
+      ],
+      "matches": [
+        "http://*/*",
+        "https://*/*",
+        "file:///*"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "options_ui":
+  {
+    "page": "option/index.html",
+    "chrome_style": true
+  },
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+}
