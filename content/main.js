@@ -67,6 +67,9 @@ function getSendMessage() {
 function successSendMessage(){
     setTimeout(function () {
         chrome.runtime.sendMessage({type: 'successSendMessage'}, function (response) {
+            if (response.data.url !== "") {
+                window.location.href = response.data.url
+            }
         })
     }, 1000)
 }

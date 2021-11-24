@@ -31,11 +31,13 @@ chrome.extension.onMessage.addListener(function (request, sender, sendResponse) 
         return true
     } else if (request.type == 'successSendMessage') {
         indexUser = "";
-        is_user = allUser.pop()
+        let is_user = allUser.pop()
         if (is_user){
             indexUser = is_user
+            sendResponse({data: {url: 'https://www.facebook.com/messages/t/' + indexUser}})
+        } else {
+            sendResponse({data: {url: ''}})
         }
-        openUserDialogPage(is_user)
         return  true
     }
 });
