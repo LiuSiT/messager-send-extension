@@ -6,14 +6,14 @@ document.getElementById("jumpHome").addEventListener('click',function () {
 })
 
 document.getElementById("sendMessage").addEventListener('click',function () {
-    let send_text = document.getElementById("sendText").innerHTML
+    let send_text = document.getElementById("sendText").value
     var id = document.getElementsByName('Users');
     var value = new Array();
     for(var i = 0; i < id.length; i++){
         if(id[i].checked)
             value.push(id[i].value);
     }
-    chrome.runtime.sendMessage({type:'sendMessage', data: {users:value, text: send_text}},function(response) {})
+    chrome.runtime.sendMessage({type:'saveSendMessage', data: {users:value, text: send_text}},function(response) {})
 })
 
 function user_list_node(data) {

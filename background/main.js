@@ -1,4 +1,7 @@
 let token = {};
+let allUser = [];
+let text = "";
+let indexUser = "";
 
 chrome.extension.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.type == "getUrl") {
@@ -16,8 +19,28 @@ chrome.extension.onMessage.addListener(function (request, sender, sendResponse) 
     } else if (request.type == "getUserInfo") {
         sendResponse({data: token})
         return true
-    } else if (request.type == "sendMessage") {
-
+    } else if (request.type == "saveSendMessage") {
+        let req_data = request.data
+        allUser = req_data['users']
+        text = req_data['text']
+        indexUser = allUser.pop()
+        openUserDialogPage(indexUser)
         return true
+    } else if (request.type == "getSendMessage") {
+        sendResponse({data: {uid: indexUser, text: text}})
+        return true
+    } else if (request.type == 'successSendMessage') {
+        indexUser = "";
+        is_user = allUser.pop()
+        if (is_user){
+            indexUser = is_user
+        }
+        openUserDialogPage(is_user)
+        return  true
     }
 });
+
+function openUserDialogPage(uid) {
+    window.open('https://www.facebook.com/messages/t/' + uid);
+
+}
