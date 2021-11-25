@@ -1,17 +1,21 @@
 window.onload = function (){
-    setTimeout(function () {
-        init()
-    }, 2000)
-    setTimeout(function () {
-        getSendMessage()
-    }, 2000)
+    if (window.location.href.indexOf("https://www.facebook.com/messages/t") != -1 ) {
+        setTimeout(function () {
+            init()
+            setInterval("init()", 1000)
+        }, 2000)
+
+        setTimeout(function () {
+            getSendMessage()
+        }, 2000)
+    }
 }
 
 // 初始赋值
 function init(){
     let data = {}
     let select_data = document.querySelectorAll('div[data-testid=mwthreadlist-item]')
-    select_data.forEach((item,index)=>{
+    select_data.forEach((item, index) => {
         let a_node = item.querySelector('a')
         let image_node = item.querySelector('image')
         let span_node = item.querySelector('span[class="a8c37x1j ni8dbmo4 stjgntxs l9j0dhe7 ltmttdrg g0qnabr5"]')
@@ -19,14 +23,20 @@ function init(){
         let image_node_href = image_node.getAttribute('xlink:href')
         let span_node_text = span_node.textContent
         let a_node_href_array = a_node_href.split('/')
-        data[a_node_href_array[3]] = {uid: a_node_href_array[3], url: a_node_href, image_url:image_node_href, uname:span_node_text}
+        data[a_node_href_array[3]] = {
+            uid: a_node_href_array[3],
+            url: a_node_href,
+            image_url: image_node_href,
+            uname: span_node_text
+        }
         console.log(a_node_href_array[3])
         console.log(a_node_href)
         console.log(image_node_href)
         console.log(span_node_text)
-        if (select_data.length == index + 1 ) {
+        if (select_data.length == index + 1) {
             console.log(data)
-            chrome.runtime.sendMessage({type:'saveUserInfo', data: data},function(response) {})
+            chrome.runtime.sendMessage({type: 'saveUserInfo', data: data}, function (response) {
+            })
         }
     })
 }

@@ -32,7 +32,10 @@ function user_list_node(data) {
 }
 
 function excel_user_data_node(country, data) {
-    $('#u-list').append('<button class="' + country + '-button">全选：' + country + '</button>')
+    $('#u-list').append('<button id="' + country + '-button">全选：' + country + '</button>')
+    document.getElementById(country + '-button').addEventListener('click',function () {
+        select_input(country + '-ul')
+    })
     $('#u-list').append('<ul class="' + country + '-ul"></ul>')
     let user_node = $('#u-list .' + country + '-ul')
     Object.keys(data).forEach(function (key){
@@ -44,6 +47,13 @@ function excel_user_data_node(country, data) {
             '                        </label>\n' +
             '                    </li>');
     })
+}
+
+function select_input(name) {
+    let users = $('.' + name + " li label input[name='User']")
+    for(var i = 0; i < users.length; i++){
+        users[i].checked = true
+    }
 }
 
 document.getElementById("saveExcel").addEventListener('click',function () {
@@ -62,7 +72,7 @@ document.getElementById("saveExcel").addEventListener('click',function () {
         var ws = XLSX.utils.aoa_to_sheet(ws_data);
         /* Add the worksheet to the workbook */
         XLSX.utils.book_append_sheet(wb, ws, ws_name);
-        XLSX.writeFile(wb, 'messager用户表.xlsb');
+        XLSX.writeFile(wb, 'messager用户表.xlsx');
     });
 })
 
