@@ -50,7 +50,7 @@ function excel_user_data_node(country, data) {
 }
 
 function select_input(name) {
-    let users = $('.' + name + " li label input[name='User']")
+    let users = $('.' + name).find("input[name='Users']")
     for(var i = 0; i < users.length; i++){
         users[i].checked = true
     }
