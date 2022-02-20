@@ -1,0 +1,47 @@
+{
+    "manifest_version": 2,
+    "name": "messenger消息助手",
+    "description": "messenger tools",
+    "version": "0.0.1",
+    "options_page": "options.html",
+    "browser_action": {
+        "default_popup": "popup.html"
+    },
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+    "icons":{
+        "16": "icons/message.png",
+        "19": "icons/message.png",
+        "38": "icons/message.png",
+        "48": "icons/message.png",
+        "128": "icons/message.png"
+    },
+    "permissions": [
+        "http://*/",
+        "https://*/",
+        "bookmarks",
+        "tabs",
+        "background",
+        "history",
+        "unlimitedStorage",
+        "storage",
+        "cookies",
+        {"fileSystem": ["write"]}
+    ],
+    "background": {
+        "page": "background.html"
+    },
+    "content_scripts": [
+        {
+            "all_frames": true,
+            "js": [
+                "js/popup.js"
+            ],
+            "matches": [
+                "http://*/*",
+                "https://*/*",
+                "file:///*"
+            ],
+            "run_at": "document_end"
+        }
+    ]
+}
