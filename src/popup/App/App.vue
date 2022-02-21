@@ -20,7 +20,7 @@
         <el-row>
           <el-descriptions title="好友数据操作" :column="2" :size="'small'">
             <el-descriptions-item><el-button size="small" @click="showDataPanel()">获取所有用户</el-button></el-descriptions-item>
-            <el-descriptions-item><el-button size="small">保存用户信息为excel表</el-button></el-descriptions-item>
+            <el-descriptions-item><el-button size="small" @click="hiddenDataPanel()">保存用户信息为excel表</el-button></el-descriptions-item>
             <el-descriptions-item><el-button size="small">读取excel好友表</el-button></el-descriptions-item>
           </el-descriptions>
         </el-row>
@@ -70,6 +70,17 @@ export default {
       console.log(mainPanel.offsetHeight);
       actionPanel.style.height = mainPanel.offsetHeight;
       this.actionPanelIsShow = true;
+    },
+
+    hiddenDataPanel(){
+      let main_app = document.getElementsByClassName("main_app")[0];
+      let mainPanel = document.getElementById("mainPanel");
+      let actionPanel = document.getElementById("actionPanel");
+      main_app.style.width = '300px' ;
+      mainPanel.style.borderLeft = '0px' ;
+      mainPanel.style.float = 'right';
+      actionPanel.style.height = '0px'
+      this.actionPanelIsShow = false;
     }
   }
 }
