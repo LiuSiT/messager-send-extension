@@ -34,12 +34,12 @@
         {
             "all_frames": true,
             "js": [
-                "js/popup.js"
+                "js/popup.js",
+                "js/messager-in.js"
             ],
             "matches": [
-                "http://*/*",
-                "https://*/*",
-                "file:///*"
+                "http://www.facebook.com/messages/*",
+                "https://www.facebook.com/messages/*"
             ],
             "run_at": "document_end"
         }

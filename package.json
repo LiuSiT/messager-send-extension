@@ -9,9 +9,11 @@
     "build-watch": "vue-cli-service build-watch"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^0.2.7",
     "core-js": "^3.8.3",
     "element-plus": "^2.0.2",
     "vue": "^3.2.13",
+    "vue-router": "^4.0.12",
     "xlsx": "^0.18.2"
   },
   "devDependencies": {

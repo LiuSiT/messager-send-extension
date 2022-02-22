@@ -67,5 +67,6 @@ module.exports = {
   pages: pagesObj,
   configureWebpack: {
     plugins: [CopyWebpackPlugin(plugins)]
-  }
+  },
+    lintOnSave: false,
 };
