@@ -10,7 +10,7 @@
                 :fit="'cover'"
             ></el-image>
           </el-col>
-          <el-col :span="11"><h3>message消息发送器</h3></el-col>
+          <el-col :span="12"><h3>message消息发送器</h3></el-col>
         </el-row>
         <el-row>
           <el-divider style="margin-left: -8px; margin-right: -8px;width:calc(100% + 16px);"></el-divider>
@@ -18,7 +18,7 @@
       </el-header>
       <el-main>
         <el-row>
-          <el-descriptions title="好友数据操作" :column="2" :size="'small'">
+          <el-descriptions title="好友数据操作" :column="2">
             <el-descriptions-item><el-button size="small" @click="getAllUserInfo()">获取所有用户</el-button></el-descriptions-item>
             <el-descriptions-item><el-button size="small" @click="saveUserToExcel()">保存用户信息为excel表</el-button></el-descriptions-item>
             <el-descriptions-item><el-button size="small">读取excel好友表</el-button></el-descriptions-item>
@@ -26,7 +26,7 @@
         </el-row>
         <el-divider></el-divider>
         <el-row>
-          <el-descriptions title="自动化信息设置" :column="2" :size="'small'">
+          <el-descriptions title="自动化信息设置" :column="2">
             <el-descriptions-item><el-button size="small">消息文本</el-button></el-descriptions-item>
             <el-descriptions-item><el-button size="small">定时设置</el-button></el-descriptions-item>
           </el-descriptions>
@@ -56,16 +56,17 @@
                 highlight-current-row
                 :size="'small'"
                 row-key="uid"
-                style="width: 100%">
-              <el-table-column type="selection"/>
-              <el-table-column property="image_url" label="头像">
+                style="width: 100%"
+                @selection-change="handleSelectionChange">
+              <el-table-column type="selection" width="20"/>
+              <el-table-column property="image_url" label="头像" width="50">
                 <template #default="scope">
                   <el-avatar :size="50" :src="scope.row.image_url"></el-avatar>
                 </template>
               </el-table-column>
 <!--              <el-table-column property="uid" label="uid"/>-->
               <el-table-column property="uname" label="用户名"/>
-              <el-table-column property="area" label="区域"
+              <el-table-column property="area" label="区域"  width="40"
                                :filters="[
                                 { text: '未分区', value: '-' },
                                 { text: '美国', value: '美国' },
@@ -102,11 +103,15 @@ export default {
     return {
       actionPanelIsShow: false,
       allUserInfo:[],
+      userSelection: [],
     }
   },
   methods: {
     filterArea(value, row) {
       return row.area === value
+    },
+    handleSelectionChange(val) {
+      this.userSelection = val
     },
     showDataPanel() {
       let main_app = document.getElementsByClassName("main_app")[0];
@@ -145,21 +150,20 @@ export default {
     },
 
     saveUserToExcel(){
+      let this_ = this
       let wb = utils.book_new();
       let ws_name = "SheetJS";
       let ws_data = [
         [ "用户头像", "用户uid", "用户名", "国家"]
       ];
-      chrome.runtime.sendMessage({type:'getUserInfo'},function(response) {
-        Object.keys(response.data).forEach(function (key) {
-          let user = response.data[key]
-          ws_data.push([user.image_url, user.uid, user.uname])
-        })
-        let ws = utils.aoa_to_sheet(ws_data);
-        /* Add the worksheet to the workbook */
-        utils.book_append_sheet(wb, ws, ws_name);
-        writeFile(wb, 'messager用户表.xlsx');
+      Object.keys(this_.userSelection).forEach(function (key) {
+        let user = this_.userSelection[key]
+        ws_data.push([user.image_url, user.uid, user.uname])
       })
+      let ws = utils.aoa_to_sheet(ws_data);
+      /* Add the worksheet to the workbook */
+      utils.book_append_sheet(wb, ws, ws_name);
+      writeFile(wb, 'messager用户表.xlsx');
     }
   }
 }
@@ -167,6 +171,7 @@ export default {
 
 <style>
 body{
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
   margin: 0;
 }
 .main_app {
@@ -200,6 +205,9 @@ body{
 .el-descriptions__header{
   margin-top: 8px;
   margin-bottom: 8px;
+}
+.el-descriptions__title{
+  font-size: 15px;
 }
 .el-descriptions__body .el-descriptions__table:not(.is-bordered) .el-descriptions__cell{
   padding-bottom: 8px;
