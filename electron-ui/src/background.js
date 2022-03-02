@@ -4,6 +4,7 @@ import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const path = require("path")
+const fs = require("fs")
 const child_process = require('child_process');
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -109,7 +110,48 @@ function moveMouse() {
 }
 
 function openChrome() {
-  var chromeProcess = child_process.exec('"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --user-data-dir="/Users/mac/Library/Application Support/Google/Chrome/test3"', function (error, stdout, stderr) {
+  let exec_path = null;
+  let user_data_dir;
+  let username;
+  switch(process.platform) {
+    case 'darwin':
+      exec_path = '"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"'
+      user_data_dir = `/Users/${username}/Library/Application Support/Google/Chrome`
+      break;
+    case 'win32':
+      let exec_path_list = [`C:/Users/{username}/AppData/Local/Google/Chrome/Application/chrome.exe`,
+        'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe']
+      for( let i = 0; i < exec_path_list.length; i ++){
+        fs.exists(exec_path_list[i], function(exists) {
+          if(exists) {
+            exec_path = '"' + exec_path_line + '"'
+            user_data_dir = `C:/Users/${username}/AppData/Local/Google/Chrome/User Data`
+          }
+        })
+      }
+      break;
+  }
+  if (exec_path == null) {
+    console.log("没有找到chrome浏览器!")
+    return
+  }
+  let profile_arg;
+  let use_user_data_dir;
+  if (profile_dir == null) {
+    use_user_data_dir = user_data_dir + '/' + profile_dir
+    profile_arg = ` --profile-directory="${profile_dir}"`
+  }  else {
+    use_user_data_dir = user_data_dir + '/Default'
+    profile_arg = ''
+    fs.exists(use_user_data_dir, function(exists) {
+      if (!exists) {
+        print("没有chrome用户!")
+        return
+      }
+    })
+  }
+  let cmd = `${exec_path} --remote-debugging-port=9222 --user-data-dir="${user_data_dir}"${profile_arg}`
+  var chromeProcess = child_process.exec(cmd, function (error, stdout, stderr) {
     if (error) {
       console.log(error.stack);
       console.log('Error code: '+error.code);

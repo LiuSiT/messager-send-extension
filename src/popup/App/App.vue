@@ -41,7 +41,7 @@
         <el-divider></el-divider>
         <el-row>
           <el-descriptions title="自动化信息设置" :column="2" direction="vertical">
-            <el-descriptions-item><el-button size="small">消息文本</el-button></el-descriptions-item>
+            <el-descriptions-item><el-button size="small" @click="testmessage">开始执行</el-button></el-descriptions-item>
             <el-descriptions-item><el-button size="small">定时设置</el-button></el-descriptions-item>
           </el-descriptions>
         </el-row>
@@ -222,6 +222,11 @@ export default {
       /* Add the worksheet to the workbook */
       utils.book_append_sheet(wb, ws, ws_name);
       writeFile(wb, 'messager用户表.xlsx');
+    },
+
+    testmessage() {
+      chrome.runtime.sendMessage({type:'testopen'},function(response) {
+      })
     }
   }
 }
