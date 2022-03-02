@@ -34,8 +34,8 @@
 <!--        <el-divider></el-divider>-->
         <el-row>
           <el-descriptions title="自动化信息设置" :column="2" direction="vertical">
-            <el-descriptions-item><el-button size="small" @click="moveShuBiao">打开chrome</el-button></el-descriptions-item>
-            <el-descriptions-item><el-button size="small">定时设置</el-button></el-descriptions-item>
+            <el-descriptions-item><el-button size="small" @click="openChrome">打开chrome</el-button></el-descriptions-item>
+            <el-descriptions-item><el-button size="small" @click="closeChrome">关闭chrome</el-button></el-descriptions-item>
           </el-descriptions>
         </el-row>
       </el-main>
@@ -218,8 +218,11 @@ export default {
       writeFile(wb, 'messager用户表.xlsx');
     },
 
-    moveShuBiao() {
-      window.ipcRenderer.send('new-message', {code:'ping',data:{}});
+    openChrome() {
+      window.ipcRenderer.send('new-message', {code:'openChrome',data:{}});
+    },
+    closeChrome() {
+      window.ipcRenderer.send('new-message', {code:'closeChrome',data:{}});
     }
   }
 }
