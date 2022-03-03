@@ -12,12 +12,12 @@
     "postuninstall": "electron-builder install-app-deps"
   },
   "main": "background.js",
-
   "dependencies": {
     "@element-plus/icons-vue": "^0.2.7",
     "core-js": "^3.8.3",
     "crypto-browserify": "^3.12.0",
     "element-plus": "^2.0.2",
+    "geoip-lite": "^1.4.3",
     "path-browserify": "^1.0.1",
     "robotjs": "^0.6.0",
     "vue": "^3.2.13",

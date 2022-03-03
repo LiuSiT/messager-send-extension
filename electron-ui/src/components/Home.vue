@@ -1,47 +1,70 @@
 <template>
   <div class="main_app">
     <el-container id="mainPanel">
-      <el-header>
-        <el-row>
-          <el-col :span="8"><h3>message消息发送器</h3></el-col>
-        </el-row>
-        <el-row>
-          <el-divider style="margin-left: -8px; margin-right: -8px;width:calc(100% + 16px);"></el-divider>
-        </el-row>
-      </el-header>
       <el-main>
-<!--        <el-row>-->
-<!--          <el-descriptions title="好友数据操作" :column="2" direction="vertical">-->
-<!--            <el-descriptions-item><el-button size="small" @click="getAllUserInfo()">获取所有用户</el-button></el-descriptions-item>-->
-<!--            <el-descriptions-item><el-button size="small" @click="saveUserToExcel()">保存用户信息为excel表</el-button></el-descriptions-item>-->
-<!--            <el-descriptions-item>-->
-<!--              <el-upload-->
-<!--                  class="upload-demo"-->
-<!--                  multiple-->
-<!--                  :limit="1"-->
-<!--                  :auto-upload="false"-->
-<!--                  :on-change="handleUserExcel"-->
-<!--                  :file-list="fileList"-->
-<!--                  accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">-->
-<!--                <el-button size="small">读取excel好友表</el-button>-->
-<!--                <template #tip>-->
-<!--                  <div class="el-upload__tip">只能上传 1 个 excel 文件, 只支持 xlsx 格式</div>-->
-<!--                </template>-->
-<!--              </el-upload>-->
-<!--            </el-descriptions-item>-->
-<!--          </el-descriptions>-->
-<!--        </el-row>-->
-<!--        <el-divider></el-divider>-->
-        <el-row>
-          <el-descriptions title="自动化信息设置" :column="2" direction="vertical">
-            <el-descriptions-item><el-button size="small" @click="openChrome">打开chrome</el-button></el-descriptions-item>
-            <el-descriptions-item><el-button size="small" @click="closeChrome">关闭chrome</el-button></el-descriptions-item>
-          </el-descriptions>
+        <el-row type="flex">
+          <el-col :span="24">
+            <el-card shadow="always">
+              <el-descriptions title="" :column="2" direction="horizontal">
+                <el-descriptions-item label="用户名:">mac</el-descriptions-item>
+                <el-descriptions-item label="网络状态:"><el-tag type="success">可用</el-tag></el-descriptions-item>
+                <el-descriptions-item label="chrome浏览器:"><el-tag type="success">可用</el-tag></el-descriptions-item>
+              </el-descriptions>
+            </el-card>
+          </el-col>
+        </el-row>
+        <el-row type="flex">
+          <el-col :span="24">
+            <el-card shadow="always">
+                <el-row style="margin: 0">
+                  <span><b>好友数据操作</b></span>
+                  <el-divider style="margin-top: 10px"></el-divider>
+                </el-row>
+                <el-row :gutter="6" style="margin: 0; margin-top: 10px">
+                  <el-col :span="12"><el-button type="primary" @click="getAllUserInfo()">获取所有用户</el-button></el-col>
+                  <el-col :span="12"><el-button type="primary" @click="saveUserToExcel()">存为excel</el-button></el-col>
+                </el-row>
+<!--                <el-descriptions title="好友数据操作" :column="2" direction="horizontal">-->
+<!--                  <el-descriptions-item><el-button size="small" @click="getAllUserInfo()">获取所有用户</el-button></el-descriptions-item>-->
+<!--                  <el-descriptions-item><el-button size="small" @click="saveUserToExcel()">存为excel</el-button></el-descriptions-item>-->
+<!--                  <el-descriptions-item>-->
+<!--                    <el-upload-->
+<!--                        class="upload-demo"-->
+<!--                        multiple-->
+<!--                        :limit="1"-->
+<!--                        :auto-upload="false"-->
+<!--                        :on-change="handleUserExcel"-->
+<!--                        :file-list="fileList"-->
+<!--                        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">-->
+<!--                      <el-button size="small">读取excel好友表</el-button>-->
+<!--                      <template #tip>-->
+<!--                        <div class="el-upload__tip">只能上传 1 个 excel 文件, 只支持 xlsx 格式</div>-->
+<!--                      </template>-->
+<!--                    </el-upload>-->
+<!--                  </el-descriptions-item>-->
+<!--                </el-descriptions>-->
+            </el-card>
+          </el-col>
+        </el-row>
+        <el-row type="flex">
+          <el-col :span="24">
+            <el-card shadow="always">
+              <el-row style="margin: 0">
+                <span><b>自动化信息设置</b></span>
+                <el-divider style="margin-top: 10px"></el-divider>
+              </el-row>
+              <el-row :gutter="6" style="margin: 0; margin-top: 10px">
+                <el-col :span="12"><el-button @click="openChrome">打开chrome</el-button></el-col>
+                <el-col :span="12"><el-button @click="closeChrome">关闭chrome</el-button></el-col>
+                <el-col :span="12"><el-button @click="openDataPanel">打开数据面板</el-button></el-col>
+              </el-row>
+            </el-card>
+          </el-col>
         </el-row>
       </el-main>
       <el-footer>
-        <el-divider style="margin-left: -8px; margin-right: -8px;width:calc(100% + 16px);"></el-divider>
-        <div style="margin-top: 15px;color: #99999980">iMessenger by princeLau</div>
+<!--        <el-divider style="margin-left: -8px; margin-right: -8px;width:calc(100% + 16px);"></el-divider>-->
+        <div style="color: #99999980"><h5>iMessenger by princeLau</h5></div>
       </el-footer>
     </el-container>
     <el-container id="actionPanel" v-show="actionPanelIsShow">
@@ -91,7 +114,7 @@
 <script>
 import { ElContainer, ElHeader, ElMain, ElFooter, ElImage, ElRow, ElCol, ElButton,
   ElDivider, ElDescriptions, ElDescriptionsItem, ElIcon, ElCollapse, ElCollapseItem,
-  ElTable, ElTableColumn, ElAvatar, ElUpload, ElMessage} from 'element-plus';
+  ElTable, ElTableColumn, ElAvatar, ElUpload, ElMessage, ElCard, ElTag} from 'element-plus';
 import { Close } from '@element-plus/icons-vue';
 import 'element-plus/dist/index.css';
 import { utils, writeFile, read } from "xlsx";
@@ -105,7 +128,7 @@ export default {
     ElContainer, ElHeader, ElMain, ElFooter, ElImage,
     ElRow, ElCol, ElCollapse, ElCollapseItem,
     ElButton, ElDivider, ElDescriptions, ElDescriptionsItem, ElIcon,
-    Close, ElTable, ElTableColumn, ElAvatar, ElUpload
+    Close, ElTable, ElTableColumn, ElAvatar, ElUpload, ElCard, ElTag
   },
   data() {
     return {
@@ -153,51 +176,53 @@ export default {
       let main_app = document.getElementsByClassName("main_app")[0];
       let mainPanel = document.getElementById("mainPanel");
       let actionPanel = document.getElementById("actionPanel");
-      main_app.style.width = '600px' ;
       mainPanel.style.borderLeft = '1px solid var(--el-border-color-base)' ;
+      mainPanel.style.width = "50%"
       mainPanel.style.float = 'right';
       console.log(mainPanel.offsetHeight);
-      actionPanel.style.height = mainPanel.offsetHeight;
+      actionPanel.style.height = 'calc(' + mainPanel.offsetHeight + '- 60px)';
       this.actionPanelIsShow = true;
+      window.ipcRenderer.send('new-message', {code:'openDataPanel',data:{}});
     },
 
     hiddenDataPanel(){
       let main_app = document.getElementsByClassName("main_app")[0];
       let mainPanel = document.getElementById("mainPanel");
       let actionPanel = document.getElementById("actionPanel");
-      main_app.style.width = '300px' ;
       mainPanel.style.borderLeft = '0px' ;
+      mainPanel.style.width = "100%"
       mainPanel.style.float = 'right';
       // actionPanel.style.height = '0px'
       this.actionPanelIsShow = false;
+      window.ipcRenderer.send('new-message', {code:'closeDataPanel',data:{}});
     },
 
     getAllUserInfo(){
-      let this_ = this
-      let excelAllUser = null
-      let excelAllUserStr = localStorage.getItem("excel_user");
-      if (excelAllUserStr){
-        excelAllUser = JSON.parse(excelAllUserStr);
-      }
-      chrome.runtime.sendMessage({type:'getUserInfo'},function(response) {
-        console.log(response.data)
-        let data = [];
-        let allFilter = new Set();
-        this_.areaFilters = [{ text: '未分区', value: '-' }]
-        Object.keys(response.data).forEach(function (key){
-          let new_user = response.data[key];
-          if (excelAllUser != null && excelAllUser[key] != undefined) {
-            new_user['area'] = excelAllUser[key].area;
-            allFilter.add(excelAllUser[key].area);
-          }
-          data.push(new_user);
-
-        })
-        for(let key of allFilter){
-          this_.areaFilters.push({ text: key, value: key })
-        }
-        this_.allUserInfo = data;
-      });
+      // let this_ = this
+      // let excelAllUser = null
+      // let excelAllUserStr = localStorage.getItem("excel_user");
+      // if (excelAllUserStr){
+      //   excelAllUser = JSON.parse(excelAllUserStr);
+      // }
+      // chrome.runtime.sendMessage({type:'getUserInfo'},function(response) {
+      //   console.log(response.data)
+      //   let data = [];
+      //   let allFilter = new Set();
+      //   this_.areaFilters = [{ text: '未分区', value: '-' }]
+      //   Object.keys(response.data).forEach(function (key){
+      //     let new_user = response.data[key];
+      //     if (excelAllUser != null && excelAllUser[key] != undefined) {
+      //       new_user['area'] = excelAllUser[key].area;
+      //       allFilter.add(excelAllUser[key].area);
+      //     }
+      //     data.push(new_user);
+      //
+      //   })
+      //   for(let key of allFilter){
+      //     this_.areaFilters.push({ text: key, value: key })
+      //   }
+      //   this_.allUserInfo = data;
+      // });
       this.showDataPanel();
     },
 
@@ -223,6 +248,9 @@ export default {
     },
     closeChrome() {
       window.ipcRenderer.send('new-message', {code:'closeChrome',data:{}});
+    },
+    openDataPanel() {
+      window.ipcRenderer.send('new-message', {code:'openDataPanel',data:{}});
     }
   }
 }
@@ -230,8 +258,7 @@ export default {
 
 <style>
 body{
-  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
-  margin: 0;
+  margin: 2px;
 }
 .main_app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
@@ -249,20 +276,23 @@ body{
 
 .el-header{
   --el-header-padding: 0 0;
-  --el-header-height: 50px;
-  margin: 8px;
+  /*--el-header-height: 138px;*/
+  /*margin: 8px;*/
+  height: 32px;
 }
 .el-main{
   --el-main-padding: 0 0;
   margin: 8px;
-  height: 450px;
+  height: 512px;
+}
+.el-main .el-row{
+  margin-top: 10px;
 }
 .el-divider--horizontal{
   margin: 0;
 
 }
 .el-descriptions__header{
-  margin-top: 8px;
   margin-bottom: 8px;
 }
 .el-descriptions__title{
@@ -270,6 +300,10 @@ body{
 }
 .el-descriptions__body .el-descriptions__table:not(.is-bordered) .el-descriptions__cell{
   padding-bottom: 8px;
+}
+.el-button{
+  width: 100%;
+  border: 0;
 }
 .el-footer{
   --el-footer-padding: 0;
@@ -292,5 +326,11 @@ body{
 }
 .el-message{
   min-width: 260px !important;
+}
+.el-card{
+  --el-card-border-radius: max(0px, min(8px, calc((100vw - 4px - 100%) * 9999))) / 8px;
+}
+.el-button{
+  --el-border-radius-base: max(0px, min(8px, calc((100vw - 4px - 100%) * 9999))) / 8px;
 }
 </style>
