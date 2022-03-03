@@ -5,7 +5,10 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const path = require("path")
 const fs = require("fs")
+const os = require('os')
+const userInfo = os.userInfo()
 const child_process = require('child_process');
+const browserRobot = require('./core/browserRobot');
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Scheme must be registered before the app is ready
@@ -18,8 +21,9 @@ let win;
 async function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
-    width: 600,
+    width: 400,
     height: 610,
+    resizable: false,
     webPreferences: {
       
       // Use pluginOptions.nodeIntegration, leave this alone
@@ -78,14 +82,20 @@ ipcMain.on('new-message', function(event, arg) {
   console.log('渲染线程发过来的消息:', arg)
   switch (arg.code) {
     case 'openChrome':
-      chromeProcess = openChrome();
+      chromeProcess = browserRobot.openChrome();
 
       win.webContents.send("fromMain", {});
       //发送给渲染进程也可以这样做
       // event.sender.send('new-message', {code: 'reply', {}})
       break;
     case 'closeChrome':
-      closeChrome(chromeProcess)
+      browserRobot.closeChrome(chromeProcess)
+      break;
+    case 'openDataPanel':
+      win.setSize(800, 610)
+      break;
+    case 'closeDataPanel':
+      win.setSize(400, 610)
       break;
   }
 })
@@ -106,66 +116,6 @@ function moveMouse() {
   {
     let y = height * Math.sin((twoPI * x) / width) + height;
     robot.moveMouse(x, y);
-  }
-}
-
-function openChrome() {
-  let exec_path = null;
-  let user_data_dir;
-  let username;
-  switch(process.platform) {
-    case 'darwin':
-      exec_path = '"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"'
-      user_data_dir = `/Users/${username}/Library/Application Support/Google/Chrome`
-      break;
-    case 'win32':
-      let exec_path_list = [`C:/Users/{username}/AppData/Local/Google/Chrome/Application/chrome.exe`,
-        'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe']
-      for( let i = 0; i < exec_path_list.length; i ++){
-        fs.exists(exec_path_list[i], function(exists) {
-          if(exists) {
-            exec_path = '"' + exec_path_line + '"'
-            user_data_dir = `C:/Users/${username}/AppData/Local/Google/Chrome/User Data`
-          }
-        })
-      }
-      break;
-  }
-  if (exec_path == null) {
-    console.log("没有找到chrome浏览器!")
-    return
-  }
-  let profile_arg;
-  let use_user_data_dir;
-  if (profile_dir == null) {
-    use_user_data_dir = user_data_dir + '/' + profile_dir
-    profile_arg = ` --profile-directory="${profile_dir}"`
-  }  else {
-    use_user_data_dir = user_data_dir + '/Default'
-    profile_arg = ''
-    fs.exists(use_user_data_dir, function(exists) {
-      if (!exists) {
-        print("没有chrome用户!")
-        return
-      }
-    })
-  }
-  let cmd = `${exec_path} --remote-debugging-port=9222 --user-data-dir="${user_data_dir}"${profile_arg}`
-  var chromeProcess = child_process.exec(cmd, function (error, stdout, stderr) {
-    if (error) {
-      console.log(error.stack);
-      console.log('Error code: '+error.code);
-      console.log('Signal received: '+error.signal);
-    }
-    console.log('stdout: ' + stdout);
-    console.log('stderr: ' + stderr);
-  });
-  return chromeProcess;
-}
-
-function closeChrome(chromeProcess){
-  if (chromeProcess != null) {
-    chromeProcess.kill("SIGINT");
   }
 }
 
