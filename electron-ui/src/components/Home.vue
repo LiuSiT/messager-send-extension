@@ -283,7 +283,7 @@ body{
 .el-main{
   --el-main-padding: 0 0;
   margin: 8px;
-  height: 512px;
+  height: 550px;
 }
 .el-main .el-row{
   margin-top: 10px;
@@ -308,7 +308,6 @@ body{
 .el-footer{
   --el-footer-padding: 0;
   --el-footer-height: 40px;
-  margin: 8px;
 }
 /*鼠标点击后移开，恢复本身样式*/
 #closeIcon, #closeIcon:focus:not(#closeIcon:hover){

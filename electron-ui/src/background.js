@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, ipcMain } from 'electron'
+import { app, protocol, BrowserWindow, ipcMain, Menu } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const path = require("path")
@@ -19,11 +19,13 @@ protocol.registerSchemesAsPrivileged([
 let win;
 
 async function createWindow() {
+  Menu.setApplicationMenu(null)
   // Create the browser window.
   win = new BrowserWindow({
     width: 400,
     height: 610,
     resizable: false,
+    useContentSize: true,
     webPreferences: {
       
       // Use pluginOptions.nodeIntegration, leave this alone
@@ -92,10 +94,12 @@ ipcMain.on('new-message', function(event, arg) {
       browserRobot.closeChrome(chromeProcess)
       break;
     case 'openDataPanel':
-      win.setSize(800, 610)
+      win.setContentSize(800, 610)
       break;
     case 'closeDataPanel':
-      win.setSize(400, 610)
+      console.log('dasdsd')
+      win.setContentSize(400, 610)
+      // win.setSize(400, 610)
       break;
   }
 })
