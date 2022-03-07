@@ -5,7 +5,7 @@
         <el-row type="flex">
           <el-col :span="24">
             <el-card shadow="always">
-              <el-descriptions title="" :column="2" direction="horizontal">
+              <el-descriptions title="" :column="2" direction="horizontal" border>
                 <el-descriptions-item label="用户名:">mac</el-descriptions-item>
                 <el-descriptions-item label="网络状态:"><el-tag type="success">可用</el-tag></el-descriptions-item>
                 <el-descriptions-item label="chrome浏览器:"><el-tag type="success">可用</el-tag></el-descriptions-item>
@@ -64,7 +64,7 @@
       </el-main>
       <el-footer>
 <!--        <el-divider style="margin-left: -8px; margin-right: -8px;width:calc(100% + 16px);"></el-divider>-->
-        <div style="color: #99999980"><h5>iMessenger by princeLau</h5></div>
+        <div style="color: #99999980; text-shadow:2px 2px 5px #00000050;"><h5>iMessenger by princeLau</h5></div>
       </el-footer>
     </el-container>
     <el-container id="actionPanel" v-show="actionPanelIsShow">
@@ -298,8 +298,18 @@ body{
 .el-descriptions__title{
   font-size: 15px;
 }
+.el-descriptions__body .el-descriptions__table{
+  border: 2px solid #e2f0ff;
+  box-shadow: 0 0 0 2px #e2f0ff;
+  border-radius: max(0px, min(8px, calc((100vw - 4px - 100%) * 9999))) / 8px;
+  overflow: hidden;
+}
 .el-descriptions__body .el-descriptions__table:not(.is-bordered) .el-descriptions__cell{
   padding-bottom: 8px;
+}
+.el-descriptions__body .el-descriptions__table:not(.is-bordered) .el-descriptions__cell .el-descriptions__label{
+  padding-bottom: 8px;
+  font-weight: 600;
 }
 .el-button{
   width: 100%;
@@ -331,5 +341,6 @@ body{
 }
 .el-button{
   --el-border-radius-base: max(0px, min(8px, calc((100vw - 4px - 100%) * 9999))) / 8px;
+  font-weight: 600;
 }
 </style>
