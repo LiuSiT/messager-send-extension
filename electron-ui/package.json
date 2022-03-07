@@ -20,7 +20,9 @@
     "geoip-lite": "^1.4.3",
     "iconv-lite": "^0.6.3",
     "path-browserify": "^1.0.1",
+    "puppeteer": "^13.4.1",
     "robotjs": "^0.6.0",
+    "sync-request": "^6.1.0",
     "vue": "^3.2.13",
     "vue-router": "^4.0.12",
     "xlsx": "^0.18.2"

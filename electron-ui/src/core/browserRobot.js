@@ -2,7 +2,9 @@ const os = require('os');
 const fs = require("fs")
 const userInfo = os.userInfo();
 const child_process = require('child_process');
+const puppeteer = require('puppeteer');
 const iconv = require('iconv-lite');
+const request = require('sync-request');
 const encoding = 'cp936';
 const binaryEncoding = 'binary';
 
@@ -64,9 +66,35 @@ function closeChrome(chromeProcess){
         if( process.platform == 'darwin') {
             chromeProcess.kill("SIGINT");
         } else if (process.platform == 'win32'){
-            chromeProcess.kill("SIGINT");
+            child_process.execSync(`taskkill /F /T /PID ${chromeProcess.pid}`);
         }
     }
+}
+
+function ptrT() {
+    var res = request('GET', 'http://localhost:9222/json/version');
+    let data = JSON.parse(res.getBody().toString('utf-8'));
+    (async () => {
+        const browser = await puppeteer.connect({browserWSEndpoint: data.webSocketDebuggerUrl,
+            defaultViewport: null});
+        const pages = await browser.pages();
+        let page;
+        if (pages.length > 0){
+            page = pages[0];
+        } else {
+            // 打开空白页面
+            page = await browser.newPage();
+        }
+        await page.goto('https://www.facebook.com/messages/t/100047516107942/');
+        setTimeout(async function () {
+            // let mv_list = await page.$('')
+            await page.$eval('div[data-pagelet="MWThreadList"]', div => div.scrollTo(1000, 1000))
+            // mv_list.scrollTo(1000,1000)
+        }, 3000)
+        setTimeout(async function () {
+            await browser.close();
+            },100000)
+    })();
 }
 
 module.exports = {
@@ -74,4 +102,7 @@ module.exports = {
     closeChrome
 }
 
-// openChrome()
+openChrome()
+setTimeout(async function () {
+    ptrT()
+},2000)
