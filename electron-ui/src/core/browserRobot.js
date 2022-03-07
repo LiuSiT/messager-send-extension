@@ -4,7 +4,7 @@ const userInfo = os.userInfo();
 const child_process = require('child_process');
 const puppeteer = require('puppeteer');
 const iconv = require('iconv-lite');
-const request = require('sync-request');
+// const request = require('sync-request');
 const encoding = 'cp936';
 const binaryEncoding = 'binary';
 
@@ -72,8 +72,9 @@ function closeChrome(chromeProcess){
 }
 
 function ptrT() {
-    var res = request('GET', 'http://localhost:9222/json/version');
-    let data = JSON.parse(res.getBody().toString('utf-8'));
+    // var res = request('GET', 'http://localhost:9222/json/version');
+    // let data = JSON.parse(res.getBody().toString('utf-8'));
+    let data = {asda: 'asdsdas'}
     (async () => {
         const browser = await puppeteer.connect({browserWSEndpoint: data.webSocketDebuggerUrl,
             defaultViewport: null});
@@ -99,10 +100,11 @@ function ptrT() {
 
 module.exports = {
     openChrome,
-    closeChrome
+    closeChrome,
+    ptrT
 }
 
-openChrome()
-setTimeout(async function () {
-    ptrT()
-},2000)
+// openChrome()
+// setTimeout(async function () {
+//     ptrT()
+// },2000)
