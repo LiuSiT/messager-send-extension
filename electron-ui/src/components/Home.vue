@@ -122,6 +122,7 @@ import { utils, writeFile, read } from "xlsx";
 const handleSelectionChange = (val) => {
   multipleSelection.value = val
 }
+
 export default {
   name: 'app',
   components: {
@@ -134,12 +135,20 @@ export default {
     return {
       actionPanelIsShow: false,
       allUserInfo:[],
+      allUserInfoMain: [],
       userSelection: [],
       fileList: [],
       areaFilters: [
         { text: '未分区', value: '-' },
       ]
     }
+  },
+  created() {
+    let this_ = this
+    window.ipcRenderer.receive("fromMain", function (user_data) {
+      console.log(user_data)
+      this_.allUserInfoMain = JSON.parse(user_data.user_data);
+    });
   },
   methods: {
     filterArea(value, row) {
@@ -198,7 +207,7 @@ export default {
     },
 
     getAllUserInfo(){
-      // let this_ = this
+      let this_ = this
       // let excelAllUser = null
       // let excelAllUserStr = localStorage.getItem("excel_user");
       // if (excelAllUserStr){
@@ -206,22 +215,22 @@ export default {
       // }
       // chrome.runtime.sendMessage({type:'getUserInfo'},function(response) {
       //   console.log(response.data)
-      //   let data = [];
-      //   let allFilter = new Set();
-      //   this_.areaFilters = [{ text: '未分区', value: '-' }]
-      //   Object.keys(response.data).forEach(function (key){
-      //     let new_user = response.data[key];
-      //     if (excelAllUser != null && excelAllUser[key] != undefined) {
-      //       new_user['area'] = excelAllUser[key].area;
-      //       allFilter.add(excelAllUser[key].area);
-      //     }
-      //     data.push(new_user);
-      //
-      //   })
-      //   for(let key of allFilter){
-      //     this_.areaFilters.push({ text: key, value: key })
-      //   }
-      //   this_.allUserInfo = data;
+      let data = [];
+      let allFilter = new Set();
+      this_.areaFilters = [{ text: '未分区', value: '-' }]
+      Object.keys(this.allUserInfoMain).forEach(function (key){
+        let new_user = this_.allUserInfoMain[key];
+        // if (excelAllUser != null && excelAllUser[key] != undefined) {
+        //   new_user['area'] = excelAllUser[key].area;
+        //   allFilter.add(excelAllUser[key].area);
+        // }
+        data.push(new_user);
+
+      })
+      for(let key of allFilter){
+        this_.areaFilters.push({ text: key, value: key })
+      }
+      this_.allUserInfo = data;
       // });
       this.showDataPanel();
     },

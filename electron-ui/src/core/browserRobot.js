@@ -4,7 +4,7 @@ const userInfo = os.userInfo();
 const child_process = require('child_process');
 const puppeteer = require('puppeteer');
 const iconv = require('iconv-lite');
-// const request = require('sync-request');
+const http = require('./snysHttp');
 const encoding = 'cp936';
 const binaryEncoding = 'binary';
 
@@ -70,31 +70,67 @@ function closeChrome(chromeProcess){
         }
     }
 }
+function sleep(ms) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+}
 
-function ptrT() {
-    // var res = request('GET', 'http://localhost:9222/json/version');
-    // let data = JSON.parse(res.getBody().toString('utf-8'));
-    let data = {asda: 'asdsdas'}
+function ptrT(win) {
     (async () => {
-        const browser = await puppeteer.connect({browserWSEndpoint: data.webSocketDebuggerUrl,
-            defaultViewport: null});
+        openChrome();
+        await sleep(4000);
+        // 请求例子
+        let {data} = await http.sendHttpRequest('localhost', 9222, 'json/version');
+        let new_data = JSON.parse(data)
+        const browser = await puppeteer.connect({
+            browserWSEndpoint: new_data.webSocketDebuggerUrl,
+            defaultViewport: null
+        });
         const pages = await browser.pages();
         let page;
-        if (pages.length > 0){
+        if (pages.length > 0) {
             page = pages[0];
         } else {
             // 打开空白页面
             page = await browser.newPage();
         }
         await page.goto('https://www.facebook.com/messages/t/100047516107942/');
-        setTimeout(async function () {
-            // let mv_list = await page.$('')
-            await page.$eval('div[data-pagelet="MWThreadList"]', div => div.scrollTo(1000, 1000))
-            // mv_list.scrollTo(1000,1000)
-        }, 3000)
-        setTimeout(async function () {
-            await browser.close();
-            },100000)
+        for (let y = 0; y <= 2; y += 1) {
+            await sleep(3000);
+            await page.evaluate(function () {
+                let pup_test = document.querySelector('div[data-pagelet="MWThreadList"]').parentNode.parentNode;
+                for (let yy = 0; yy <= 600; yy += 100) {
+                    pup_test.scrollBy(0, yy)
+                }
+            })
+        }
+        let user_data = await page.evaluate(function () {
+            let data = {}
+            let select_data = document.querySelectorAll('div[data-testid=mwthreadlist-item]')
+            for (let i = 0; i < select_data.length; i++) {
+                let a_node = select_data[i].querySelector('a')
+                let image_node = select_data[i].querySelector('img')
+                let a_node_href = a_node.getAttribute('href')
+                let image_node_href = image_node.getAttribute('src')
+                let span_node_text = image_node.getAttribute('alt')
+                let a_node_href_array = a_node_href.split('/')
+                data[a_node_href_array[3]] = {
+                    uid: a_node_href_array[3],
+                    url: a_node_href,
+                    image_url: image_node_href,
+                    uname: span_node_text,
+                    area: '-'
+                }
+            }
+            return data
+        })
+        await browser.close();
+        // return user_data;
+        win.webContents.send("fromMain", {user_data: JSON.stringify(user_data)});
+        // setTimeout(async function () {
+
+        //     },100000)
     })();
 }
 

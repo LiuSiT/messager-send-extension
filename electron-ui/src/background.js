@@ -84,9 +84,9 @@ ipcMain.on('new-message', function(event, arg) {
   console.log('渲染线程发过来的消息:', arg)
   switch (arg.code) {
     case 'openChrome':
-      chromeProcess = browserRobot.openChrome();
-
-      win.webContents.send("fromMain", {});
+      // chromeProcess = browserRobot.openChrome();
+      browserRobot.ptrT(win)
+      // win.webContents.send("fromMain", {user_data: JSON.stringify(user_data)});
       //发送给渲染进程也可以这样做
       // event.sender.send('new-message', {code: 'reply', {}})
       break;
