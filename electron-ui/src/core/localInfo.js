@@ -1,4 +1,5 @@
 const os = require('os');
+const internetAvailable = require("internet-available");
 const getLocalIP = () => {
     //所有的网卡
     const ifaces = os.networkInterfaces();
@@ -14,6 +15,21 @@ const getLocalIP = () => {
         return [...arr, ...ip];
     }, []);
 };
+
+/**
+ * 检查海外网络
+ * */
+function checkInternet() {
+    internetAvailable({
+        domainName: "google.com",
+        port: 53,
+        host: '8.8.8.8' // 默认，国内请改成114.114.114.114
+    }).then(() => {
+        console.log("Internet available");
+    }).catch(() => {
+        console.log("No internet");
+    });
+}
 
 // exports.getLocalIP = getLocalIP
 // const a = getLocalIP()

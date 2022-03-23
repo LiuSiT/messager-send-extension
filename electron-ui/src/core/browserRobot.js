@@ -76,6 +76,9 @@ function sleep(ms) {
     });
 }
 
+/**
+ * 获取messenger聊天用户
+ */
 function ptrT(win) {
     (async () => {
         openChrome();

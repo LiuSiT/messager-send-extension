@@ -54,7 +54,7 @@
                 <el-divider style="margin-top: 10px"></el-divider>
               </el-row>
               <el-row :gutter="6" style="margin: 0; margin-top: 10px">
-                <el-col :span="12"><el-button @click="openChrome">打开chrome</el-button></el-col>
+                <el-col :span="12"><el-button @click="openChrome">获取ins聊天</el-button></el-col>
                 <el-col :span="12"><el-button @click="closeChrome">关闭chrome</el-button></el-col>
                 <el-col :span="12"><el-button @click="openDataPanel">打开数据面板</el-button></el-col>
               </el-row>
@@ -84,6 +84,7 @@
                 ref="filterHandler"
                 :data="allUserInfo"
                 highlight-current-row
+                @cell-click ="handleCellClick"
                 :size="'small'"
                 row-key="uid"
                 style="width: 100%"
@@ -96,10 +97,17 @@
               </el-table-column>
 <!--              <el-table-column property="uid" label="uid"/>-->
               <el-table-column property="uname" label="用户名"/>
-              <el-table-column property="area" label="区域"  width="40"
+              <el-table-column property="area" label="区域"  width="80"
                                :filters="areaFilters"
                                :filter-method="filterArea"
-                               filter-placement="bottom-end"/>
+                               filter-placement="bottom-end">
+                <template #default="scope">
+                  <div class="input-box">
+                    <el-input v-show="false" size="small" @blur="handleInputBlur" v-model="scope.row.area" ></el-input>
+                  </div>
+                  <span>{{scope.row.area}}</span>
+                </template>
+              </el-table-column>
             </el-table>
           </el-collapse-item>
           <el-collapse-item title="任务面板" name="2">
@@ -114,7 +122,7 @@
 <script>
 import { ElContainer, ElHeader, ElMain, ElFooter, ElImage, ElRow, ElCol, ElButton,
   ElDivider, ElDescriptions, ElDescriptionsItem, ElIcon, ElCollapse, ElCollapseItem,
-  ElTable, ElTableColumn, ElAvatar, ElUpload, ElMessage, ElCard, ElTag} from 'element-plus';
+  ElTable, ElTableColumn, ElAvatar, ElUpload, ElMessage, ElCard, ElTag, ElInput} from 'element-plus';
 import { Close } from '@element-plus/icons-vue';
 import 'element-plus/dist/index.css';
 import { utils, writeFile, read } from "xlsx";
@@ -129,7 +137,7 @@ export default {
     ElContainer, ElHeader, ElMain, ElFooter, ElImage,
     ElRow, ElCol, ElCollapse, ElCollapseItem,
     ElButton, ElDivider, ElDescriptions, ElDescriptionsItem, ElIcon,
-    Close, ElTable, ElTableColumn, ElAvatar, ElUpload, ElCard, ElTag
+    Close, ElTable, ElTableColumn, ElAvatar, ElUpload, ElCard, ElTag , ElInput
   },
   data() {
     return {
@@ -215,7 +223,7 @@ export default {
       // }
       // chrome.runtime.sendMessage({type:'getUserInfo'},function(response) {
       //   console.log(response.data)
-      let data = [];
+      let data = [{image_url: 'dasd', uname: 'test', area:'-'}];
       let allFilter = new Set();
       this_.areaFilters = [{ text: '未分区', value: '-' }]
       Object.keys(this.allUserInfoMain).forEach(function (key){
@@ -260,7 +268,26 @@ export default {
     },
     openDataPanel() {
       window.ipcRenderer.send('new-message', {code:'openDataPanel',data:{}});
-    }
+    },
+
+    //单元格点击后，显示input，并让input 获取焦点
+    handleCellClick:function(row, column, cell, event){
+        if(cell.hasChildNodes()&& cell.childNodes.length == 1) {
+          let _inputNode = cell.childNodes[0].childNodes[2].childNodes[0].childNodes[4];
+          if (_inputNode.tagName === 'INPUT') {
+            cell.childNodes[0].childNodes[2].childNodes[0].style.display = "block"
+            _inputNode.focus();
+            cell.childNodes[0].childNodes[3].style.display = "none"
+          }
+        }
+    },
+
+    //input框失去焦点事件
+    handleInputBlur:function(event){   //当 input 失去焦点 时,input 切换为 span，并且让下方 表格消失（注意，与点击表格事件的执行顺序）
+      let _inputNode = event.target;
+      _inputNode.parentNode.style.display = "none"
+      _inputNode.parentNode.parentNode.parentNode.childNodes[3].style.display = "block"
+    },
   }
 }
 </script>
@@ -351,5 +378,12 @@ body{
 .el-button{
   --el-border-radius-base: max(0px, min(8px, calc((100vw - 4px - 100%) * 9999))) / 8px;
   font-weight: 600;
+}
+.tb-edit .input-box {
+  display: none
+}
+.tb-edit .current-cell .input-box {
+  display: block;
+  margin-left: -15px;
 }
 </style>
