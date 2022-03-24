@@ -21,8 +21,8 @@
                   <el-divider style="margin-top: 10px"></el-divider>
                 </el-row>
                 <el-row :gutter="6" style="margin: 0; margin-top: 10px">
-                  <el-col :span="12"><el-button type="primary" @click="getAllUserInfo()">获取所有用户</el-button></el-col>
-                  <el-col :span="12"><el-button type="primary" @click="saveUserToExcel()">存为excel</el-button></el-col>
+                  <el-col :span="24"><el-button type="primary" @click="getAllUserInfo()">获取所有用户</el-button></el-col>
+<!--                  <el-col :span="12"><el-button type="primary" @click="saveUserToExcel()">存为excel</el-button></el-col>-->
                 </el-row>
 <!--                <el-descriptions title="好友数据操作" :column="2" direction="horizontal">-->
 <!--                  <el-descriptions-item><el-button size="small" @click="getAllUserInfo()">获取所有用户</el-button></el-descriptions-item>-->
@@ -80,6 +80,11 @@
       <el-main>
         <el-collapse>
           <el-collapse-item title="全部聊天" name="1">
+            <el-row :gutter="6" style="margin: 0; margin-top: 10px">
+              <el-col :span="8"><el-button type="primary" @click="">导出</el-button></el-col>
+              <el-col :span="8"><el-button type="primary" @click="">导入</el-button></el-col>
+              <el-col :span="8"><el-button type="primary" @click="dialogVisible = true">创建任务</el-button></el-col>
+            </el-row>
             <el-table
                 ref="filterHandler"
                 :data="allUserInfo"
@@ -116,13 +121,30 @@
         </el-collapse>
       </el-main>
     </el-container>
+
+    <!--创建任务dialog-->
+    <el-dialog
+        v-model="dialogVisible"
+        title="创建任务"
+        width="50%"
+        :before-close="handleClose">
+      <span>This is a message</span>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-row :gutter="6" style="margin: 0; margin-top: 10px">
+              <el-col :span="12"><el-button @click="dialogVisible = false">退出</el-button></el-col>
+              <el-col :span="12"><el-button type="primary" @click="dialogVisible = false">确认</el-button></el-col>
+          </el-row>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { ElContainer, ElHeader, ElMain, ElFooter, ElImage, ElRow, ElCol, ElButton,
   ElDivider, ElDescriptions, ElDescriptionsItem, ElIcon, ElCollapse, ElCollapseItem,
-  ElTable, ElTableColumn, ElAvatar, ElUpload, ElMessage, ElCard, ElTag, ElInput} from 'element-plus';
+  ElTable, ElTableColumn, ElAvatar, ElUpload, ElMessage, ElCard, ElTag, ElInput, ElDialog} from 'element-plus';
 import { Close } from '@element-plus/icons-vue';
 import 'element-plus/dist/index.css';
 import { utils, writeFile, read } from "xlsx";
@@ -137,10 +159,11 @@ export default {
     ElContainer, ElHeader, ElMain, ElFooter, ElImage,
     ElRow, ElCol, ElCollapse, ElCollapseItem,
     ElButton, ElDivider, ElDescriptions, ElDescriptionsItem, ElIcon,
-    Close, ElTable, ElTableColumn, ElAvatar, ElUpload, ElCard, ElTag , ElInput
+    Close, ElTable, ElTableColumn, ElAvatar, ElUpload, ElCard, ElTag , ElInput, ElDialog
   },
   data() {
     return {
+      dialogVisible: false,
       actionPanelIsShow: false,
       allUserInfo:[],
       allUserInfoMain: [],
