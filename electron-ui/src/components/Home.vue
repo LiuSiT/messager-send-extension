@@ -1,4 +1,5 @@
 <template>
+  <el-config-provider :locale="locale">
   <div class="main_app">
     <el-container id="mainPanel">
       <el-main>
@@ -116,7 +117,20 @@
             </el-table>
           </el-collapse-item>
           <el-collapse-item title="任务面板" name="2">
-
+            <el-table
+                ref="filterHandler"
+                :data="allTaskInfo"
+                highlight-current-row
+                @cell-click ="handleCellClick"
+                :size="'small'"
+                row-key="uid"
+                style="width: 100%"
+                @selection-change="handleSelectionChange">
+              <el-table-column type="selection" width="20"/>
+              <el-table-column property="desc" label="描述"/>
+              <el-table-column property="time" label="时间"/>
+              <el-table-column property="opera" label="操作"/>
+            </el-table>
           </el-collapse-item>
         </el-collapse>
       </el-main>
@@ -126,28 +140,57 @@
     <el-dialog
         v-model="dialogVisible"
         title="创建任务"
-        width="50%"
-        :before-close="handleClose">
-      <span>This is a message</span>
+        width="50%">
+      <el-scrollbar max-height="260px">
+        <el-form ref="form" :model="createTaskForm" label-width="80px">
+          <el-form-item label="执行时间">
+            <ElTimePicker
+                v-model="createTaskForm.time"
+                placeholder="任意时间点">
+            </ElTimePicker>
+          </el-form-item>
+          <el-form-item label="描述">
+            <el-input
+                type="textarea"
+                placeholder="请输入内容"
+                v-model="createTaskForm.desc"
+                :autosize="{ minRows: 2, maxRows: 4}"
+                show-word-limit
+            />
+          </el-form-item>
+          <el-form-item label="发送内容">
+            <el-input
+                type="textarea"
+                placeholder="请输入内容"
+                v-model="createTaskForm.sendMessenger[0]"
+                :autosize="{ minRows: 2, maxRows: 4}"
+                show-word-limit
+            />
+          </el-form-item>
+        </el-form>
+      </el-scrollbar>
       <template #footer>
         <span class="dialog-footer">
           <el-row :gutter="6" style="margin: 0; margin-top: 10px">
-              <el-col :span="12"><el-button @click="dialogVisible = false">退出</el-button></el-col>
-              <el-col :span="12"><el-button type="primary" @click="dialogVisible = false">确认</el-button></el-col>
+              <el-col :span="12"><el-button @click="dialogVisible = false">取消</el-button></el-col>
+              <el-col :span="12"><el-button type="primary" @click="createTask();dialogVisible = false">确认</el-button></el-col>
           </el-row>
         </span>
       </template>
     </el-dialog>
   </div>
+  </el-config-provider>
 </template>
 
 <script>
 import { ElContainer, ElHeader, ElMain, ElFooter, ElImage, ElRow, ElCol, ElButton,
   ElDivider, ElDescriptions, ElDescriptionsItem, ElIcon, ElCollapse, ElCollapseItem,
-  ElTable, ElTableColumn, ElAvatar, ElUpload, ElMessage, ElCard, ElTag, ElInput, ElDialog} from 'element-plus';
+  ElTable, ElTableColumn, ElAvatar, ElUpload, ElMessage, ElCard, ElTag, ElInput, ElDialog,
+  ElForm, ElFormItem, ElTimePicker, ElConfigProvider, ElScrollbar} from 'element-plus';
 import { Close } from '@element-plus/icons-vue';
 import 'element-plus/dist/index.css';
 import { utils, writeFile, read } from "xlsx";
+import zhCn from 'element-plus/lib/locale/lang/zh-cn'
 
 const handleSelectionChange = (val) => {
   multipleSelection.value = val
@@ -159,19 +202,27 @@ export default {
     ElContainer, ElHeader, ElMain, ElFooter, ElImage,
     ElRow, ElCol, ElCollapse, ElCollapseItem,
     ElButton, ElDivider, ElDescriptions, ElDescriptionsItem, ElIcon,
-    Close, ElTable, ElTableColumn, ElAvatar, ElUpload, ElCard, ElTag , ElInput, ElDialog
+    Close, ElTable, ElTableColumn, ElAvatar, ElUpload, ElCard, ElTag , ElInput, ElDialog,
+    ElForm, ElFormItem, ElTimePicker, ElConfigProvider, ElScrollbar
   },
   data() {
     return {
+      locale: zhCn,
       dialogVisible: false,
       actionPanelIsShow: false,
       allUserInfo:[],
+      allTaskInfo:[],
       allUserInfoMain: [],
       userSelection: [],
       fileList: [],
       areaFilters: [
         { text: '未分区', value: '-' },
-      ]
+      ],
+      createTaskForm: {
+        time: new Date(2016, 9, 10, 18, 40),
+        sendMessenger: [""],
+        desc: ""
+      }
     }
   },
   created() {
@@ -216,7 +267,7 @@ export default {
       let main_app = document.getElementsByClassName("main_app")[0];
       let mainPanel = document.getElementById("mainPanel");
       let actionPanel = document.getElementById("actionPanel");
-      mainPanel.style.borderLeft = '1px solid var(--el-border-color-base)' ;
+      mainPanel.style.borderLeft = '1px solid #00000010' ;
       mainPanel.style.width = "50%"
       mainPanel.style.float = 'right';
       console.log(mainPanel.offsetHeight);
@@ -311,6 +362,15 @@ export default {
       _inputNode.parentNode.style.display = "none"
       _inputNode.parentNode.parentNode.parentNode.childNodes[3].style.display = "block"
     },
+
+    // 创建任务
+    createTask(){
+      this.allTaskInfo.push(this.createTaskForm)
+      this.createTaskForm.time = ""
+      this.createTaskForm.sendMessenger = [""]
+      this.createTaskForm.desc = ""
+      console.log(this.allTaskInfo)
+    }
   }
 }
 </script>
@@ -408,5 +468,7 @@ body{
 .tb-edit .current-cell .input-box {
   display: block;
   margin-left: -15px;
+}
+.el-picker-panel__body{
 }
 </style>
