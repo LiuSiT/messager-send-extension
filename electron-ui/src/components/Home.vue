@@ -126,10 +126,24 @@
                 row-key="uid"
                 style="width: 100%"
                 @selection-change="handleSelectionChange">
-              <el-table-column type="selection" width="20"/>
+<!--              <el-table-column type="selection" width="20"/>-->
               <el-table-column property="desc" label="描述"/>
               <el-table-column property="time" label="时间"/>
-              <el-table-column property="opera" label="操作"/>
+              <el-table-column label="状态">
+                <template #default="scope">
+                  <el-tag v-if="scope.row.status == 0" size="small">等待执行</el-tag>
+                  <el-tag v-else-if="scope.row.status == 1" type="success" size="small">完成</el-tag>
+                  <el-tag v-else-if="scope.row.status == 2" type="danger" size="small">未完成</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作">
+                <template #default="scope">
+                  <el-row>
+                    <el-col :span="12"><el-button size="small" type="primary" round>详情</el-button></el-col>
+                    <el-col :span="12"><el-button size="small" type="danger" :icon="buttonDelete" round></el-button></el-col>
+                  </el-row>
+                </template>
+              </el-table-column>
             </el-table>
           </el-collapse-item>
         </el-collapse>
@@ -187,7 +201,7 @@ import { ElContainer, ElHeader, ElMain, ElFooter, ElImage, ElRow, ElCol, ElButto
   ElDivider, ElDescriptions, ElDescriptionsItem, ElIcon, ElCollapse, ElCollapseItem,
   ElTable, ElTableColumn, ElAvatar, ElUpload, ElMessage, ElCard, ElTag, ElInput, ElDialog,
   ElForm, ElFormItem, ElTimePicker, ElConfigProvider, ElScrollbar} from 'element-plus';
-import { Close } from '@element-plus/icons-vue';
+import { Close, Delete } from '@element-plus/icons-vue';
 import 'element-plus/dist/index.css';
 import { utils, writeFile, read } from "xlsx";
 import zhCn from 'element-plus/lib/locale/lang/zh-cn'
@@ -222,7 +236,8 @@ export default {
         time: new Date(2016, 9, 10, 18, 40),
         sendMessenger: [""],
         desc: ""
-      }
+      },
+      buttonDelete: Delete
     }
   },
   created() {
@@ -365,7 +380,9 @@ export default {
 
     // 创建任务
     createTask(){
-      this.allTaskInfo.push(this.createTaskForm)
+      let new_obj = JSON.parse(JSON.stringify(this.createTaskForm))
+      new_obj.status = 0
+      this.allTaskInfo.push(new_obj)
       this.createTaskForm.time = ""
       this.createTaskForm.sendMessenger = [""]
       this.createTaskForm.desc = ""
