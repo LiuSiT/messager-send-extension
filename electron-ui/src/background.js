@@ -103,7 +103,7 @@ ipcMain.on('new-message', function(event, arg) {
       // win.setSize(400, 610)
       break;
     case 'createTask':
-      task.createScheduleJob(win, JSON.stringify(arg.data))
+      task.createScheduleJob(win, JSON.parse(arg.data))
   }
 })
 

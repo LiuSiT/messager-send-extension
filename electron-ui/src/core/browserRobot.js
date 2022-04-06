@@ -139,7 +139,7 @@ function ptrT(win) {
 }
 
 // 自动发送消息
-function sendMessenger(){
+function sendMessenger(task_data){
     (async () => {
         openChrome();
         await sleep(4000);
@@ -158,40 +158,43 @@ function sendMessenger(){
             // 打开空白页面
             page = await browser.newPage();
         }
-        await page.goto('https://www.facebook.com/messages/t/100047516107942/');
-        let screenSize = robot.getScreenSize()
-        let twoPI = Math.PI * 2.0;
-        console.log('width:' + screenSize.width + ',height:' + screenSize.height)
-        switch(process.platform) {
-            case 'darwin':
-                child_process.exec('pbcopy').stdin.end('test messenger')
-                break
-            case 'win32':
-                child_process.exec('clip').stdin.end('test messenger')
-                break
+        for(let userInfoIndex=0; userInfoIndex<task_data.userSelection.length; userInfoIndex++) {
+            await page.goto('https://www.facebook.com/messages/t/' + task_data.userSelection[userInfoIndex].uid + '/');
+            let screenSize = robot.getScreenSize()
+            let twoPI = Math.PI * 2.0;
+            console.log('width:' + screenSize.width + ',height:' + screenSize.height)
+            await sleep(3000);
+            robot.setMouseDelay(2);
+            let height = (screenSize.height / 2) - 10;
+            let width = screenSize.width;
+            for (let x = 0; x < width / 2; x+=10) {
+                let y = height * Math.sin((twoPI * x) / width) + height;
+                robot.moveMouse(x, y);
+            }
+            for(let sendMessengerIndex=0; sendMessengerIndex<task_data.sendMessenger.length; sendMessengerIndex++) {
+                switch (process.platform) {
+                    case 'darwin':
+                        child_process.exec('pbcopy', {encoding: "utf-8"}).stdin.end(task_data.sendMessenger[sendMessengerIndex])
+                        break
+                    case 'win32':
+                        child_process.exec('clip').stdin.end(iconv.encode(task_data.sendMessenger[sendMessengerIndex], encoding))
+                        break
+                }
+                robot.mouseClick();
+                await sleep(500);
+                switch (process.platform) {
+                    case 'darwin':
+                        robot.keyTap("v", ["command"])
+                        break
+                    case 'win32':
+                        robot.keyTap("v", ["control"]);
+                        break
+                }
+                await sleep(1000);
+                robot.keyTap("enter");
+                await sleep(2000);
+            }
         }
-        await sleep(3000);
-        robot.setMouseDelay(2);
-        let height = (screenSize.height / 2) - 10;
-        let width = screenSize.width;
-        for (let x = 0; x < width / 2; x++)
-        {
-            let y = height * Math.sin((twoPI * x) / width) + height;
-            robot.moveMouse(x, y);
-        }
-        robot.mouseClick();
-        await sleep(500);
-        switch(process.platform) {
-            case 'darwin':
-                robot.keyTap("v", ["command"])
-                break
-            case 'win32':
-                robot.keyTap("v", ["control"]);
-                break
-        }
-        await sleep(1000);
-        robot.keyTap("enter");
-        await sleep(2000);
         await browser.close();
     })()
 }

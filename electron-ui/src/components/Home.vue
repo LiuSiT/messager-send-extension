@@ -247,7 +247,8 @@ export default {
       console.log(data)
       switch (data.code) {
         case 'getUserData':
-          this.allUserInfoMain = data.data
+          this_.allUserInfoMain = data.data
+          console.log(data.data)
           break
         case 'successTask':
           for(let i=0; i<this_.allTaskInfo.length; i++) {
@@ -324,7 +325,7 @@ export default {
       // }
       // chrome.runtime.sendMessage({type:'getUserInfo'},function(response) {
       //   console.log(response.data)
-      let data = [{uid:"", url:"", image_url: 'dasd', uname: 'test', area:'-'}];
+      let data = [{uid:"100047516107942", url:"https://www.facebook.com/messages/t/100047516107942/", image_url: 'dasd', uname: 'test', area:'-'}];
       let allFilter = new Set();
       this_.areaFilters = [{ text: '未分区', value: '-' }]
       Object.keys(this.allUserInfoMain).forEach(function (key){

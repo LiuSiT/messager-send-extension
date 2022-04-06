@@ -30,7 +30,7 @@ function checkInternet() {
         console.log("No internet");
     });
 }
-
+checkInternet()
 // exports.getLocalIP = getLocalIP
 // const a = getLocalIP()
 // console.log(a);
