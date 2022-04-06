@@ -4,6 +4,7 @@ const userInfo = os.userInfo();
 const child_process = require('child_process');
 const puppeteer = require('puppeteer');
 const iconv = require('iconv-lite');
+const robot = require("robotjs");
 const http = require('./snysHttp');
 const encoding = 'cp936';
 const binaryEncoding = 'binary';
@@ -130,19 +131,79 @@ function ptrT(win) {
         })
         await browser.close();
         // return user_data;
-        win.webContents.send("fromMain", {user_data: JSON.stringify(user_data)});
+        win.webContents.send("fromMain", JSON.stringify({code: 'getUserData', data: user_data}));
         // setTimeout(async function () {
 
         //     },100000)
     })();
 }
 
+// 自动发送消息
+function sendMessenger(){
+    (async () => {
+        openChrome();
+        await sleep(4000);
+        // 请求例子
+        let {data} = await http.sendHttpRequest('localhost', 9222, 'json/version');
+        let new_data = JSON.parse(data)
+        const browser = await puppeteer.connect({
+            browserWSEndpoint: new_data.webSocketDebuggerUrl,
+            defaultViewport: null
+        });
+        const pages = await browser.pages();
+        let page;
+        if (pages.length > 0) {
+            page = pages[0];
+        } else {
+            // 打开空白页面
+            page = await browser.newPage();
+        }
+        await page.goto('https://www.facebook.com/messages/t/100047516107942/');
+        let screenSize = robot.getScreenSize()
+        let twoPI = Math.PI * 2.0;
+        console.log('width:' + screenSize.width + ',height:' + screenSize.height)
+        switch(process.platform) {
+            case 'darwin':
+                child_process.exec('pbcopy').stdin.end('test messenger')
+                break
+            case 'win32':
+                child_process.exec('clip').stdin.end('test messenger')
+                break
+        }
+        await sleep(3000);
+        robot.setMouseDelay(2);
+        let height = (screenSize.height / 2) - 10;
+        let width = screenSize.width;
+        for (let x = 0; x < width / 2; x++)
+        {
+            let y = height * Math.sin((twoPI * x) / width) + height;
+            robot.moveMouse(x, y);
+        }
+        robot.mouseClick();
+        await sleep(500);
+        switch(process.platform) {
+            case 'darwin':
+                robot.keyTap("v", ["command"])
+                break
+            case 'win32':
+                robot.keyTap("v", ["control"]);
+                break
+        }
+        await sleep(1000);
+        robot.keyTap("enter");
+        await sleep(2000);
+        await browser.close();
+    })()
+}
+
 module.exports = {
     openChrome,
     closeChrome,
-    ptrT
+    ptrT,
+    sendMessenger
 }
 
+// child_process.exec('pbcopy').stdin.end('sssss')
 // openChrome()
 // setTimeout(async function () {
 //     ptrT()

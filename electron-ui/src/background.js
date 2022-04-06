@@ -9,6 +9,7 @@ const os = require('os')
 const userInfo = os.userInfo()
 const child_process = require('child_process');
 const browserRobot = require('./core/browserRobot');
+const task = require('./core/task');
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Scheme must be registered before the app is ready
@@ -101,6 +102,8 @@ ipcMain.on('new-message', function(event, arg) {
       win.setContentSize(400, 610)
       // win.setSize(400, 610)
       break;
+    case 'createTask':
+      task.createScheduleJob(win, JSON.stringify(arg.data))
   }
 })
 

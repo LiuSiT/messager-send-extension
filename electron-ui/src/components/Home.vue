@@ -121,7 +121,6 @@
                 ref="filterHandler"
                 :data="allTaskInfo"
                 highlight-current-row
-                @cell-click ="handleCellClick"
                 :size="'small'"
                 row-key="uid"
                 style="width: 100%"
@@ -140,7 +139,7 @@
                 <template #default="scope">
                   <el-row>
                     <el-col :span="12"><el-button size="small" type="primary" round>详情</el-button></el-col>
-                    <el-col :span="12"><el-button size="small" type="danger" :icon="buttonDelete" round></el-button></el-col>
+                    <el-col :span="12"><el-button size="small" type="danger" :icon="buttonDelete" round @click="deleteTask(scope.row.id)"></el-button></el-col>
                   </el-row>
                 </template>
               </el-table-column>
@@ -233,6 +232,7 @@ export default {
         { text: '未分区', value: '-' },
       ],
       createTaskForm: {
+        id: "",
         time: new Date(2016, 9, 10, 18, 40),
         sendMessenger: [""],
         desc: ""
@@ -242,9 +242,21 @@ export default {
   },
   created() {
     let this_ = this
-    window.ipcRenderer.receive("fromMain", function (user_data) {
-      console.log(user_data)
-      this_.allUserInfoMain = JSON.parse(user_data.user_data);
+    window.ipcRenderer.receive("fromMain", function (data) {
+      data = JSON.parse(data);
+      console.log(data)
+      switch (data.code) {
+        case 'getUserData':
+          this.allUserInfoMain = data.data
+          break
+        case 'successTask':
+          for(let i=0; i<this_.allTaskInfo.length; i++) {
+            if (this_.allTaskInfo[i].id == data.data.id){
+              this_.allTaskInfo[i].status = 1;
+            }
+          }
+          break
+      }
     });
   },
   methods: {
@@ -312,7 +324,7 @@ export default {
       // }
       // chrome.runtime.sendMessage({type:'getUserInfo'},function(response) {
       //   console.log(response.data)
-      let data = [{image_url: 'dasd', uname: 'test', area:'-'}];
+      let data = [{uid:"", url:"", image_url: 'dasd', uname: 'test', area:'-'}];
       let allFilter = new Set();
       this_.areaFilters = [{ text: '未分区', value: '-' }]
       Object.keys(this.allUserInfoMain).forEach(function (key){
@@ -380,13 +392,38 @@ export default {
 
     // 创建任务
     createTask(){
+      this.createTaskForm.id = this.UUID()
       let new_obj = JSON.parse(JSON.stringify(this.createTaskForm))
       new_obj.status = 0
+      new_obj.userSelection = this.userSelection
       this.allTaskInfo.push(new_obj)
+      window.ipcRenderer.send('new-message', {code:'createTask',data: JSON.stringify(new_obj)});
+      this.createTaskForm.id = ""
       this.createTaskForm.time = ""
       this.createTaskForm.sendMessenger = [""]
       this.createTaskForm.desc = ""
       console.log(this.allTaskInfo)
+    },
+
+    // 删除任务
+    deleteTask(id) {
+      for(let i=0; i<this.allTaskInfo.length; i++) {
+        if (this.allTaskInfo[i].id == id){
+          this.allTaskInfo.splice(i, 1)
+        }
+      }
+    },
+
+    UUID() {
+      let str = '0123456789abcdef'
+      let arr = []
+      for(let i = 0; i < 36; i++){
+        arr.push(str.substr(Math.floor(Math.random() * 0x10), 1))
+      }
+      arr[14] = 4;
+      arr[19] = str.substr(arr[19] & 0x3 | 0x8, 1)
+      arr[8] = arr[13] = arr[18] = arr[23] = '-'
+      return arr.join('')
     }
   }
 }
