@@ -22,8 +22,8 @@
                   <el-divider style="margin-top: 10px"></el-divider>
                 </el-row>
                 <el-row :gutter="6" style="margin: 0; margin-top: 10px">
-                  <el-col :span="24"><el-button type="primary" @click="getAllUserInfo()">获取所有用户</el-button></el-col>
-<!--                  <el-col :span="12"><el-button type="primary" @click="saveUserToExcel()">存为excel</el-button></el-col>-->
+                  <el-col :span="12"><el-button type="primary" @click="getAllUserInfo()">获取所有用户</el-button></el-col>
+                  <el-col :span="12"><el-button type="primary" @click="saveUserToExcel()">存为excel</el-button></el-col>
                 </el-row>
 <!--                <el-descriptions title="好友数据操作" :column="2" direction="horizontal">-->
 <!--                  <el-descriptions-item><el-button size="small" @click="getAllUserInfo()">获取所有用户</el-button></el-descriptions-item>-->
@@ -157,10 +157,11 @@
       <el-scrollbar max-height="260px">
         <el-form ref="form" :model="createTaskForm" label-width="80px">
           <el-form-item label="执行时间">
-            <ElTimePicker
-                v-model="createTaskForm.time"
-                placeholder="任意时间点">
-            </ElTimePicker>
+<!--            <ElTimePicker-->
+<!--                v-model="createTaskForm.time"-->
+<!--                placeholder="任意时间点">-->
+<!--            </ElTimePicker>-->
+            <Datepicker v-model="createTaskForm.time" locale="zh-cn" autoApply :closeOnAutoApply="false"></Datepicker>
           </el-form-item>
           <el-form-item label="描述">
             <el-input
@@ -172,19 +173,27 @@
             />
           </el-form-item>
           <el-form-item label="发送内容">
-            <el-input
-                type="textarea"
-                placeholder="请输入内容"
-                v-model="createTaskForm.sendMessenger[0]"
-                :autosize="{ minRows: 2, maxRows: 4}"
-                show-word-limit
-            />
+            <el-row :gutter="6" v-for="(item, index) in createTaskForm.sendMessenger" style="width: 100%; margin-top: 2px">
+              <el-col :span="20">
+                <el-input
+                  type="textarea"
+                  placeholder="请输入内容"
+                  v-model="createTaskForm.sendMessenger[index]"
+                  :autosize="{ minRows: 2, maxRows: 4}"
+                  show-word-limit
+                />
+              </el-col>
+              <el-col :span="4">
+                <el-button v-if="index === 0" type="primary" size="small" :icon="buttonPlus" round @click="addSendMessenger()"></el-button>
+                <el-button v-else type="danger" size="small" :icon="buttonMinus" round  @click="deleteSendMessenger(index)"></el-button>
+              </el-col>
+            </el-row>
           </el-form-item>
         </el-form>
       </el-scrollbar>
       <template #footer>
         <span class="dialog-footer">
-          <el-row :gutter="6" style="margin: 0; margin-top: 10px">
+          <el-row :gutter="6">
               <el-col :span="12"><el-button @click="dialogVisible = false">取消</el-button></el-col>
               <el-col :span="12"><el-button type="primary" @click="createTask();dialogVisible = false">确认</el-button></el-col>
           </el-row>
@@ -200,10 +209,12 @@ import { ElContainer, ElHeader, ElMain, ElFooter, ElImage, ElRow, ElCol, ElButto
   ElDivider, ElDescriptions, ElDescriptionsItem, ElIcon, ElCollapse, ElCollapseItem,
   ElTable, ElTableColumn, ElAvatar, ElUpload, ElMessage, ElCard, ElTag, ElInput, ElDialog,
   ElForm, ElFormItem, ElTimePicker, ElConfigProvider, ElScrollbar} from 'element-plus';
-import { Close, Delete } from '@element-plus/icons-vue';
+import { Close, Delete, Plus, Minus } from '@element-plus/icons-vue';
 import 'element-plus/dist/index.css';
 import { utils, writeFile, read } from "xlsx";
 import zhCn from 'element-plus/lib/locale/lang/zh-cn'
+import Datepicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 
 const handleSelectionChange = (val) => {
   multipleSelection.value = val
@@ -216,7 +227,8 @@ export default {
     ElRow, ElCol, ElCollapse, ElCollapseItem,
     ElButton, ElDivider, ElDescriptions, ElDescriptionsItem, ElIcon,
     Close, ElTable, ElTableColumn, ElAvatar, ElUpload, ElCard, ElTag , ElInput, ElDialog,
-    ElForm, ElFormItem, ElTimePicker, ElConfigProvider, ElScrollbar
+    ElForm, ElFormItem, ElTimePicker, ElConfigProvider, ElScrollbar,
+    Datepicker
   },
   data() {
     return {
@@ -233,11 +245,13 @@ export default {
       ],
       createTaskForm: {
         id: "",
-        time: new Date(2016, 9, 10, 18, 40),
+        time: new Date(),
         sendMessenger: [""],
         desc: ""
       },
-      buttonDelete: Delete
+      buttonDelete: Delete,
+      buttonPlus: Plus,
+      buttonMinus: Minus
     }
   },
   created() {
@@ -386,9 +400,18 @@ export default {
 
     //input框失去焦点事件
     handleInputBlur:function(event){   //当 input 失去焦点 时,input 切换为 span，并且让下方 表格消失（注意，与点击表格事件的执行顺序）
+      let this_ = this;
       let _inputNode = event.target;
       _inputNode.parentNode.style.display = "none"
       _inputNode.parentNode.parentNode.parentNode.childNodes[3].style.display = "block"
+      let allFilter = new Set();
+      this.areaFilters = [{ text: '未分区', value: '-' }]
+      Object.keys(this.allUserInfo).forEach(function (key){
+        allFilter.add(this_.allUserInfo[key].area);
+      })
+      for(let key of allFilter){
+        this.areaFilters.push({ text: key, value: key })
+      }
     },
 
     // 创建任务
@@ -400,7 +423,7 @@ export default {
       this.allTaskInfo.push(new_obj)
       window.ipcRenderer.send('new-message', {code:'createTask',data: JSON.stringify(new_obj)});
       this.createTaskForm.id = ""
-      this.createTaskForm.time = ""
+      this.createTaskForm.time = new Date()
       this.createTaskForm.sendMessenger = [""]
       this.createTaskForm.desc = ""
       console.log(this.allTaskInfo)
@@ -425,6 +448,17 @@ export default {
       arr[19] = str.substr(arr[19] & 0x3 | 0x8, 1)
       arr[8] = arr[13] = arr[18] = arr[23] = '-'
       return arr.join('')
+    },
+
+    // 添加发送消息
+    addSendMessenger() {
+      this.createTaskForm.sendMessenger.push("")
+      console.log('添加发送消息')
+    },
+
+    // 删除发送消息
+    deleteSendMessenger(index) {
+      this.createTaskForm.sendMessenger.splice(index, 1)
     }
   }
 }

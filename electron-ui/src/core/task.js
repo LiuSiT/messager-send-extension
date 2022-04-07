@@ -2,8 +2,13 @@ const schedule = require('node-schedule');
 const browserRobot = require('./browserRobot');
 
 const  createScheduleJob = (win, data) =>{
-    //每分钟的第30秒定时执行一次:
-    let j = schedule.scheduleJob(data.id, '*/5 * * * * *',()=>{
+    let time = new Date(data.time)
+    let cron = time.getSeconds() + ' ' + time.getMinutes() + ' '  +
+        time.getHours() + ' '  + time.getDate() + ' '  +
+        (time.getMonth() + 1) + ' ' + '?'
+    console.log(cron)
+    //根据cron定时执行一次:
+    let j = schedule.scheduleJob(data.id, cron,()=>{
         console.log('执行任务,id：' + data.id + '、时间：' + new Date());
         browserRobot.sendMessenger(data)
         // 定时器取消
