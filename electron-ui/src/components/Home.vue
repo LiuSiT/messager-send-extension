@@ -25,6 +25,23 @@
                   <el-col :span="12"><el-button type="primary" @click="getAllUserInfo()">获取所有用户</el-button></el-col>
                   <el-col :span="12"><el-button type="primary" @click="saveUserToExcel()">存为excel</el-button></el-col>
                 </el-row>
+                <el-row :gutter="6" style="margin: 0; margin-top: 10px">
+                  <el-col :span="24">
+                    <el-upload
+                        class="upload-demo"
+                        multiple
+                        :limit="1"
+                        :auto-upload="false"
+                        :on-change="handleUserExcel"
+                        :file-list="fileList"
+                        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                      <el-button type="primary">读取excel好友表</el-button>
+                      <template #tip>
+                        <div class="el-upload__tip">只能上传 1 个 excel 文件, 只支持 xlsx 格式</div>
+                      </template>
+                    </el-upload>
+                  </el-col>
+                </el-row>
 <!--                <el-descriptions title="好友数据操作" :column="2" direction="horizontal">-->
 <!--                  <el-descriptions-item><el-button size="small" @click="getAllUserInfo()">获取所有用户</el-button></el-descriptions-item>-->
 <!--                  <el-descriptions-item><el-button size="small" @click="saveUserToExcel()">存为excel</el-button></el-descriptions-item>-->
@@ -293,7 +310,7 @@ export default {
 
         let all_user = {}
         let range = utils.decode_range(worksheet["!ref"])
-        for (let i = range.s.r + 1; i < range.e.r; i++) {
+        for (let i = range.s.r + 1; i <= range.e.r; i++) {
           all_user[worksheet[utils.encode_col(1) + utils.encode_row(i)].v] = {
               image_url:worksheet[utils.encode_col(0) + utils.encode_row(i)].v,
               uid: worksheet[utils.encode_col(1) + utils.encode_row(i)].v,
@@ -332,11 +349,11 @@ export default {
 
     getAllUserInfo(){
       let this_ = this
-      // let excelAllUser = null
-      // let excelAllUserStr = localStorage.getItem("excel_user");
-      // if (excelAllUserStr){
-      //   excelAllUser = JSON.parse(excelAllUserStr);
-      // }
+      let excelAllUser = null
+      let excelAllUserStr = localStorage.getItem("excel_user");
+      if (excelAllUserStr){
+        excelAllUser = JSON.parse(excelAllUserStr);
+      }
       // chrome.runtime.sendMessage({type:'getUserInfo'},function(response) {
       //   console.log(response.data)
       let data = [{uid:"100047516107942", url:"https://www.facebook.com/messages/t/100047516107942/", image_url: 'dasd', uname: 'test', area:'-'}];
@@ -344,17 +361,19 @@ export default {
       this_.areaFilters = [{ text: '未分区', value: '-' }]
       Object.keys(this.allUserInfoMain).forEach(function (key){
         let new_user = this_.allUserInfoMain[key];
-        // if (excelAllUser != null && excelAllUser[key] != undefined) {
-        //   new_user['area'] = excelAllUser[key].area;
-        //   allFilter.add(excelAllUser[key].area);
-        // }
         data.push(new_user);
-
       })
       for(let key of allFilter){
         this_.areaFilters.push({ text: key, value: key })
       }
       this_.allUserInfo = data;
+      Object.keys(this.allUserInfo).forEach(function (key){
+        let new_user = this_.allUserInfo[key];
+        if (excelAllUser != null && excelAllUser[new_user.uid] != undefined) {
+          new_user['area'] = excelAllUser[new_user.uid].area;
+          allFilter.add(excelAllUser[key].area);
+        }
+      })
       // });
       this.showDataPanel();
     },
@@ -368,7 +387,7 @@ export default {
       ];
       Object.keys(this_.userSelection).forEach(function (key) {
         let user = this_.userSelection[key]
-        ws_data.push([user.image_url, user.uid, user.uname])
+        ws_data.push([user.image_url, user.uid, user.uname, user.area])
       })
       let ws = utils.aoa_to_sheet(ws_data);
       /* Add the worksheet to the workbook */
