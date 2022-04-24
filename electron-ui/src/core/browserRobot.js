@@ -27,6 +27,7 @@ function openChrome() {
                 if(exists) {
                     exec_path = '"' + exec_path_list[i] + '"'
                     user_data_dir = `C:/Users/${username}/AppData/Local/Google/Chrome/User Data`
+                    break
                 }
             }
             break;
@@ -41,7 +42,8 @@ function openChrome() {
         use_user_data_dir = user_data_dir + '/' + profile_dir
         profile_arg = ` --profile-directory="${profile_dir}"`
     }  else {
-        use_user_data_dir = user_data_dir + '/Default'
+        // use_user_data_dir = user_data_dir + '/Default'
+        use_user_data_dir = user_data_dir
         profile_arg = ''
         let exists = fs.existsSync(use_user_data_dir);
         if (!exists) {
@@ -49,6 +51,7 @@ function openChrome() {
             return
         }
     }
+    console.log(JSON.stringify({exec_path: exec_path, user_data_dir: user_data_dir}));
     let cmd = `${exec_path} --remote-debugging-port=9222 --user-data-dir="${user_data_dir}"${profile_arg}`
     // const decoder = new TextDecoder('cp936');
     return child_process.exec(cmd,{ encoding: binaryEncoding }, function (error, stdout, stderr) {
@@ -99,8 +102,8 @@ function ptrT(win) {
             // 打开空白页面
             page = await browser.newPage();
         }
-        await page.goto('https://www.facebook.com/messages/t/100047516107942/');
-        for (let y = 0; y <= 2; y += 1) {
+        await page.goto('https://www.facebook.com/messages');
+        for (let y = 0; y <= 12; y += 1) {
             await sleep(3000);
             await page.evaluate(function () {
                 let pup_test = document.querySelector('div[data-pagelet="MWThreadList"]').parentNode.parentNode;

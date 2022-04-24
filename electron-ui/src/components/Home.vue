@@ -299,6 +299,7 @@ export default {
       this.userSelection = val
     },
     handleUserExcel(file, fileList) {
+      let this_ = this
       let reader = new FileReader();
       reader.onload = function(e) {
         let data = e.target.result;
@@ -319,6 +320,12 @@ export default {
           }
         }
         localStorage.setItem("excel_user", JSON.stringify(all_user));
+        let data_list = []
+        Object.keys(all_user).forEach(function (key){
+          let new_user = all_user[key];
+          data_list.push(new_user);
+        })
+        this_.allUserInfo = data_list;
       }
       reader.readAsBinaryString(file.raw);
     },
@@ -356,7 +363,8 @@ export default {
       }
       // chrome.runtime.sendMessage({type:'getUserInfo'},function(response) {
       //   console.log(response.data)
-      let data = [{uid:"100047516107942", url:"https://www.facebook.com/messages/t/100047516107942/", image_url: 'dasd', uname: 'test', area:'-'}];
+      // let data = [{uid:"100047516107942", url:"https://www.facebook.com/messages/t/100047516107942/", image_url: 'dasd', uname: 'test', area:'-'}];
+      let data = []
       let allFilter = new Set();
       this_.areaFilters = [{ text: '未分区', value: '-' }]
       Object.keys(this.allUserInfoMain).forEach(function (key){
@@ -369,7 +377,7 @@ export default {
       this_.allUserInfo = data;
       Object.keys(this.allUserInfo).forEach(function (key){
         let new_user = this_.allUserInfo[key];
-        if (excelAllUser != null && excelAllUser[new_user.uid] != undefined) {
+        if (excelAllUser != null && excelAllUser.length >= 1 && excelAllUser[new_user.uid] != undefined) {
           new_user['area'] = excelAllUser[new_user.uid].area;
           allFilter.add(excelAllUser[key].area);
         }
