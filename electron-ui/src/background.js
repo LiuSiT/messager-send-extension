@@ -47,6 +47,7 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
   }
+  task.createInternetCheckJob(win)
 }
 
 // Quit when all windows are closed.
@@ -104,6 +105,9 @@ ipcMain.on('new-message', function(event, arg) {
       break;
     case 'createTask':
       task.createScheduleJob(win, JSON.parse(arg.data))
+      break;
+    case 'getPcInfo':
+      win.webContents.send("fromMain", JSON.stringify({code: 'pcInfo', data:browserRobot.getPcInfo()}));
   }
 })
 
