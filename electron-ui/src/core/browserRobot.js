@@ -9,6 +9,35 @@ const http = require('./snysHttp');
 const encoding = 'cp936';
 const binaryEncoding = 'binary';
 
+function getPcInfo(){
+    let result_data = {}
+    let exec_path = ''
+    let username = userInfo.username;
+    result_data.username = username
+    switch(process.platform) {
+        case 'darwin':
+            exec_path = '"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"'
+            break;
+        case 'win32':
+            let exec_path_list = [`C:/Users/${username}/AppData/Local/Google/Chrome/Application/chrome.exe`,
+                'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe']
+            for( let i = 0; i < exec_path_list.length; i ++){
+                let exists = fs.existsSync(exec_path_list[i]);
+                if(exists) {
+                    exec_path = '"' + exec_path_list[i] + '"'
+                    break
+                }
+            }
+            break;
+    }
+    if (exec_path == null) {
+        result_data.chromeState = 2
+    } else {
+        result_data.chromeState = 1
+    }
+    return result_data
+}
+
 function openChrome() {
     let exec_path = null;
     let user_data_dir;
@@ -206,7 +235,8 @@ module.exports = {
     openChrome,
     closeChrome,
     ptrT,
-    sendMessenger
+    sendMessenger,
+    getPcInfo
 }
 
 // child_process.exec('pbcopy').stdin.end('sssss')

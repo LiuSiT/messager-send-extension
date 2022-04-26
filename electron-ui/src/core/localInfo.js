@@ -19,18 +19,24 @@ const getLocalIP = () => {
 /**
  * 检查海外网络
  * */
-function checkInternet() {
+function checkInternet(win) {
     internetAvailable({
         domainName: "google.com",
         port: 53,
-        host: '8.8.8.8' // 默认，国内请改成114.114.114.114
+        host: '114.114.114.114' // 默认，国内请改成114.114.114.114
     }).then(() => {
-        console.log("Internet available");
+        console.log("网络可用");
+        win.webContents.send("fromMain", JSON.stringify({code: 'pcInfo', data:{internetState: 1}}));
     }).catch(() => {
-        console.log("No internet");
+        console.log("网络不可用");
+        win.webContents.send("fromMain", JSON.stringify({code: 'pcInfo', data:{internetState: 2}}));
     });
 }
-checkInternet()
+
+module.exports = {
+    checkInternet
+}
+// checkInternet()
 // exports.getLocalIP = getLocalIP
 // const a = getLocalIP()
 // console.log(a);

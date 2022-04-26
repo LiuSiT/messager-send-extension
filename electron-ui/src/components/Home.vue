@@ -7,9 +7,15 @@
           <el-col :span="24">
             <el-card shadow="always">
               <el-descriptions title="" :column="2" direction="horizontal" border>
-                <el-descriptions-item label="用户名:">mac</el-descriptions-item>
-                <el-descriptions-item label="网络状态:"><el-tag type="success">可用</el-tag></el-descriptions-item>
-                <el-descriptions-item label="chrome浏览器:"><el-tag type="success">可用</el-tag></el-descriptions-item>
+                <el-descriptions-item label="用户名:">{{ info.username }}</el-descriptions-item>
+                <el-descriptions-item label="网络状态:">
+                  <el-tag v-if="info.internetState === 1" type="success">可用</el-tag>
+                  <el-tag v-else-if="info.internetState === 2" type="danger">不可用</el-tag>
+                </el-descriptions-item>
+                <el-descriptions-item label="chrome浏览器:">
+                  <el-tag v-if="info.chromeState === 1" type="success">可用</el-tag>
+                  <el-tag v-else-if="info.internetState === 2" type="danger">不可用</el-tag>
+                </el-descriptions-item>
               </el-descriptions>
             </el-card>
           </el-col>
@@ -257,6 +263,11 @@ export default {
       allUserInfoMain: [],
       userSelection: [],
       fileList: [],
+      info: {
+        username: '',
+        internetState: '',
+        chromeState: ''
+      },
       areaFilters: [
         { text: '未分区', value: '-' },
       ],
@@ -288,8 +299,20 @@ export default {
             }
           }
           break
+        case 'pcInfo':
+          if (data.data.username) {
+            this_.info.username = data.data.username
+          }
+          if (data.data.username) {
+            this_.info.chromeState = data.data.chromeState
+          }
+          if (data.data.internetState) {
+            this_.info.internetState = data.data.internetState
+          }
+          break
       }
     });
+    this.getPcInfo()
   },
   methods: {
     filterArea(value, row) {
@@ -411,6 +434,9 @@ export default {
     },
     openDataPanel() {
       window.ipcRenderer.send('new-message', {code:'openDataPanel',data:{}});
+    },
+    getPcInfo() {
+      window.ipcRenderer.send('new-message', {code:'getPcInfo',data:{}});
     },
 
     //单元格点击后，显示input，并让input 获取焦点

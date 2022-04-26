@@ -1,5 +1,6 @@
 const schedule = require('node-schedule');
 const browserRobot = require('./browserRobot');
+const localInfo = require('./localInfo');
 
 const  createScheduleJob = (win, data) =>{
     let time = new Date(data.time)
@@ -17,11 +18,18 @@ const  createScheduleJob = (win, data) =>{
     });
 }
 
+const createInternetCheckJob = (win) => {
+    schedule.scheduleJob('internetCheck', '*/10 * * * * ?',()=> {
+        localInfo.checkInternet(win)
+    });
+}
+
 const  deleteScheduleJob = (id) =>{
     schedule.cancelJob(id)
 }
 
 module.exports = {
     createScheduleJob,
-    deleteScheduleJob
+    deleteScheduleJob,
+    createInternetCheckJob
 }
